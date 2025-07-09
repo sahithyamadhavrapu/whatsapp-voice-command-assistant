@@ -1,6 +1,6 @@
 from flask import Flask, render_template_string
 from voice_engine import get_command
-from whatsapp_bot import send_message
+from whatsapp_bot import send_message, send_file
 
 app = Flask(__name__)
 
@@ -16,13 +16,17 @@ def index():
 @app.route("/send")
 def send():
     command = get_command()
-    if "send" in command and "to" in command:
+
+    if "send file" in command:
+        result = send_file(command)
+    elif "send message" in command or "send" in command:
         result = send_message(command)
-        return f"<p>{result}</p>"
     else:
-        return "No valid command detected."
+        result = "No valid command detected."
+
+    return f"<p>{result}</p>"
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(debug=True)
+
     
